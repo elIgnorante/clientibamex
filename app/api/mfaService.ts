@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const BASE_URL = "https://b44e-177-249-163-207.ngrok-free.app/api";
+const BASE_URL = "https://ede8-2806-103e-2-1c40-954-ea7b-6b6-ceae.ngrok-free.app/api";
 
 export const requestVerificationCode = async (email: string) => {
   try {

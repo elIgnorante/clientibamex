@@ -5,8 +5,9 @@ const DashboardLayout = () => {
   return (
     <Stack>
       <Stack.Screen name="dashboard" options={{ headerShown: false }} />
-      <Stack.Screen name="(clients)" options={{ headerShown: false }} />
+      <Stack.Screen name="(routes)" options={{ headerShown: false }} />
       <Stack.Screen name="(drivers)" options={{ headerShown: false }} />
+      <Stack.Screen name="(assignments)" options={{ headerShown: false }} />
     </Stack>
   );
 };

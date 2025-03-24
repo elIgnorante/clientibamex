@@ -1,12 +1,12 @@
 import React from 'react';
 import { View, Text } from 'react-native';
 
-const Drivers = () => {
+const Assignments = () => {
   return (
     <View>
-        <Text>Pantalla de Conductores</Text>
+      <Text>Pantalla de Asignación de Rutas</Text>
     </View>
   );
 };
 
-export default Drivers;
+export default Assignments;

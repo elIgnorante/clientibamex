@@ -1,10 +1,11 @@
 import React from 'react';
+import { Stack } from 'expo-router';
 
 const DriversLayout = () => {
   return (
-    <div>
-      {/* ...existing code... */}
-    </div>
+    <Stack>
+      <Stack.Screen name='drivers' options={{headerShown: false}}/>
+    </Stack>
   );
 };
 
