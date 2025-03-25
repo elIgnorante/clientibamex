@@ -4,7 +4,7 @@ import { Platform } from "react-native";
 
 // Create axios instance with the correct backend URL
 const api = axios.create({
-  baseURL: "https://ede8-2806-103e-2-1c40-954-ea7b-6b6-ceae.ngrok-free.app/api",
+  baseURL: process.env.EXPO_PUBLIC_BASE_URL,
   headers: {
     "Content-Type": "application/json",
   },
