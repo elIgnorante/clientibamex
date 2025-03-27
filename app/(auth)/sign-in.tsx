@@ -50,7 +50,7 @@ const SignIn = () => {
 
     setIsLoading(true);
     try {
-      const response = await requestVerificationCode(email);
+      const response = await requestVerificationCode(email, password);
       setStep("verification");
       Alert.alert(
         "Código enviado",
@@ -71,14 +71,9 @@ const SignIn = () => {
 
     setIsLoading(true);
     try {
-      const verificationResponse = await verifyCode(
-        email,
-        verificationCode,
-        password
-      );
+      const verificationResponse = await verifyCode(email, verificationCode);
       // Una vez verificado el código, iniciamos sesión con las credenciales
       await loginUser(email, password, dispatch);
-      router.replace("/(admin)/(dashboard)/dashboard");
     } catch (error: any) {
       Alert.alert("Error", error.message || "No se pudo verificar el código");
     } finally {

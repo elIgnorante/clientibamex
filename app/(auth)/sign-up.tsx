@@ -5,6 +5,8 @@ import {
   StyleSheet,
   TouchableOpacity,
   ActivityIndicator,
+  Alert,
+  ScrollView,
 } from "react-native";
 import { Formik } from "formik";
 import * as Yup from "yup";
@@ -46,14 +48,14 @@ const SignUpScreen = () => {
         dispatch
       );
       console.log("Registration successful with:", values);
-      router.replace("/(admin)/(dashboard)/dashboard");
-    } catch (error) {
-      console.error("Registration failed:", error);
+    } catch (error: any) {
+      console.log(error);
+      Alert.alert("Error", error.response?.data?.message);
     }
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <ScrollView style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.title}>Registrarse</Text>
         <Text style={styles.subtitle}>Crea tu cuenta para empezar</Text>
@@ -161,7 +163,7 @@ const SignUpScreen = () => {
           <Text style={styles.linkText}>Inicia Sesión</Text>
         </TouchableOpacity>
       </View>
-    </SafeAreaView>
+    </ScrollView>
   );
 };
 

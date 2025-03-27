@@ -10,6 +10,7 @@ import {
 } from "../store/slice/authSlice";
 import { Dispatch } from "@reduxjs/toolkit";
 import { User } from "../types/auth";
+import { handleRoleNavigation } from "../../utils/navigation";
 
 // Login user
 export const loginUser = async (
@@ -20,15 +21,18 @@ export const loginUser = async (
   try {
     dispatch(loginStart());
     const response = await api.post("/login", { email, password });
-    console.log("Login response:", response.data);
 
     dispatch(
       loginSuccess({
         user: response.data.user,
         token: response.data.token,
+        role: response.data.user.role,
       })
     );
     await setToken(response.data.token);
+
+    handleRoleNavigation(response.data.user.role);
+
     return response.data;
   } catch (error: any) {
     console.error("Login error:", error.response?.data || error.message);
@@ -59,10 +63,13 @@ export const registerUser = async (
       registerSuccess({
         user: response.data.username,
         token: response.data.token,
+        role: response.data.role,
       })
     );
-    //respones.data.role
     await setToken(response.data.token);
+
+    handleRoleNavigation(response.data.role);
+
     return response.data;
   } catch (error: any) {
     console.error("Register error:", error.response?.data || error.message);
