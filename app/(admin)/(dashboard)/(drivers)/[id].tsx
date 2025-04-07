@@ -10,6 +10,7 @@ import {
 } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import { useLocalSearchParams, router } from "expo-router";
+import api from "../../../api/axios";
 import { RootState } from "../../../store/store";
 import { updateDriver } from "../../../api/driverApi";
 
@@ -28,8 +29,28 @@ const EditDriver = () => {
     password: "",
     active: false,
   });
-
+  const [assignedBus, setAssignedBus] = useState<any>(null);
   const [showPassword, setShowPassword] = useState(false);
+
+  const fetchAssignedBus = async () => {
+    try {
+      const response = await api.get(`/buses?driverId=${id}`);
+      if (response.data && response.data.length > 0) {
+        setAssignedBus(response.data[0]);
+      }
+    } catch (error) {
+      console.error("Error fetching assigned bus:", error);
+    }
+  };
+
+  const handleRemoveBus = async () => {
+    try {
+      await api.post(`/buses/${assignedBus.id}/unassign`);
+      setAssignedBus(null);
+    } catch (error) {
+      console.error("Error removing bus assignment:", error);
+    }
+  };
 
   useEffect(() => {
     if (driver) {
@@ -40,6 +61,7 @@ const EditDriver = () => {
         password: "",
         active: driver.active,
       });
+      fetchAssignedBus();
     }
   }, [driver]);
 
@@ -136,6 +158,38 @@ const EditDriver = () => {
           />
           <Text style={styles.statusLabel}>Usuario Activo</Text>
         </TouchableOpacity>
+
+        <View style={styles.busSection}>
+          <Text style={styles.sectionTitle}>Autobús Asignado</Text>
+          {assignedBus ? (
+            <View style={styles.busInfo}>
+              <View style={styles.busDetail}>
+                <Text style={styles.busLabel}>ID del Autobús:</Text>
+                <Text style={styles.busValue}>{assignedBus.busId}</Text>
+              </View>
+              <View style={styles.busDetail}>
+                <Text style={styles.busLabel}>Placa:</Text>
+                <Text style={styles.busValue}>{assignedBus.licensePlate}</Text>
+              </View>
+              <View style={styles.busDetail}>
+                <Text style={styles.busLabel}>Estado:</Text>
+                <Text style={[styles.busValue, styles.statusText]}>Activo</Text>
+              </View>
+              <TouchableOpacity
+                style={styles.removeBusButton}
+                onPress={handleRemoveBus}
+              >
+                <Text style={styles.removeBusButtonText}>
+                  Eliminar Asignación
+                </Text>
+              </TouchableOpacity>
+            </View>
+          ) : (
+            <View style={styles.noBusInfo}>
+              <Text style={styles.noBusText}>No hay autobús asignado</Text>
+            </View>
+          )}
+        </View>
 
         <View style={styles.buttonContainer}>
           <TouchableOpacity
@@ -248,6 +302,67 @@ const styles = StyleSheet.create({
   errorText: {
     fontSize: 16,
     color: "#dc2626",
+  },
+  busSection: {
+    marginBottom: 24,
+    backgroundColor: "white",
+    padding: 16,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: "#e1e8ed",
+  },
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: "600",
+    color: "#2c3e50",
+    marginBottom: 16,
+  },
+  busInfo: {
+    gap: 12,
+  },
+  busDetail: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    paddingVertical: 8,
+    borderBottomWidth: 1,
+    borderBottomColor: "#e1e8ed",
+  },
+  busLabel: {
+    fontSize: 15,
+    color: "#64748b",
+    fontWeight: "500",
+  },
+  busValue: {
+    fontSize: 15,
+    color: "#2c3e50",
+    fontWeight: "600",
+  },
+  statusText: {
+    color: "#059669",
+  },
+  removeBusButton: {
+    backgroundColor: "#800909",
+    padding: 12,
+    borderRadius: 6,
+    marginTop: 16,
+    alignItems: "center",
+  },
+  removeBusButtonText: {
+    color: "white",
+    fontSize: 14,
+    fontWeight: "600",
+  },
+  noBusInfo: {
+    padding: 16,
+    backgroundColor: "#f1f5f9",
+    borderRadius: 6,
+    alignItems: "center",
+  },
+  noBusText: {
+    fontSize: 15,
+    color: "#64748b",
+    fontStyle: "italic",
   },
 });
 

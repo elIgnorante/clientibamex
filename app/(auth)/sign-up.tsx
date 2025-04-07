@@ -11,7 +11,6 @@ import {
 import { Formik } from "formik";
 import * as Yup from "yup";
 import { TextInput } from "react-native-gesture-handler";
-import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../store/store";
