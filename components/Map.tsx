@@ -650,9 +650,9 @@ const RoutePlanner = () => {
             </View>
           </Modal>
         </View>
-      )}
+      )} 
     </ScrollView>
   );
 };
-
+ 
 export default RoutePlanner;
