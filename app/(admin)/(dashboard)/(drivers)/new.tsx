@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import {
   View,
   Text,
@@ -10,19 +10,31 @@ import {
 import { useDispatch } from "react-redux";
 import { createDriver } from "../../../api/driverApi";
 import { router } from "expo-router";
+import { Formik } from "formik";
+import * as Yup from "yup";
+
+const DriverSchema = Yup.object().shape({
+  username: Yup.string().required("Nombre de usuario requerido"),
+  email: Yup.string()
+    .email("Correo electrónico inválido")
+    .required("Correo electrónico requerido"),
+  fullName: Yup.string().required("Nombre completo requerido"),
+  password: Yup.string()
+    .min(6, "La contraseña debe tener al menos 6 caracteres")
+    .required("Contraseña requerida"),
+});
 
 const NewDriver = () => {
   const dispatch = useDispatch();
-  const [formData, setFormData] = useState({
-    username: "",
-    email: "",
-    fullName: "",
-    password: "",
-  });
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (values: {
+    username: string;
+    email: string;
+    fullName: string;
+    password: string;
+  }) => {
     try {
-      await createDriver(formData, dispatch);
+      await createDriver(values, dispatch);
       router.back();
     } catch (error) {
       console.error("Error al crear conductor:", error);
@@ -35,70 +47,101 @@ const NewDriver = () => {
         <Text style={styles.title}>Nuevo Conductor</Text>
       </View>
 
-      <View style={styles.form}>
-        <View style={styles.inputGroup}>
-          <Text style={styles.label}>Nombre Completo</Text>
-          <TextInput
-            style={styles.input}
-            value={formData.fullName}
-            onChangeText={(text) =>
-              setFormData({ ...formData, fullName: text })
-            }
-            placeholder="Ingrese nombre completo"
-          />
-        </View>
+      <Formik
+        initialValues={{
+          username: "",
+          email: "",
+          fullName: "",
+          password: "",
+        }}
+        validationSchema={DriverSchema}
+        onSubmit={handleSubmit}
+      >
+        {({
+          handleChange,
+          handleBlur,
+          handleSubmit,
+          values,
+          errors,
+          touched,
+        }) => (
+          <View style={styles.form}>
+            <View style={styles.inputGroup}>
+              <Text style={styles.label}>Nombre Completo</Text>
+              <TextInput
+                style={styles.input}
+                value={values.fullName}
+                onChangeText={handleChange("fullName")}
+                onBlur={handleBlur("fullName")}
+                placeholder="Ingrese nombre completo"
+              />
+              {touched.fullName && errors.fullName && (
+                <Text style={styles.errorText}>{errors.fullName}</Text>
+              )}
+            </View>
 
-        <View style={styles.inputGroup}>
-          <Text style={styles.label}>Usuario</Text>
-          <TextInput
-            style={styles.input}
-            value={formData.username}
-            onChangeText={(text) =>
-              setFormData({ ...formData, username: text })
-            }
-            placeholder="Ingrese nombre de usuario"
-          />
-        </View>
+            <View style={styles.inputGroup}>
+              <Text style={styles.label}>Usuario</Text>
+              <TextInput
+                style={styles.input}
+                value={values.username}
+                onChangeText={handleChange("username")}
+                onBlur={handleBlur("username")}
+                placeholder="Ingrese nombre de usuario"
+              />
+              {touched.username && errors.username && (
+                <Text style={styles.errorText}>{errors.username}</Text>
+              )}
+            </View>
 
-        <View style={styles.inputGroup}>
-          <Text style={styles.label}>Email</Text>
-          <TextInput
-            style={styles.input}
-            value={formData.email}
-            onChangeText={(text) => setFormData({ ...formData, email: text })}
-            placeholder="Ingrese email"
-            keyboardType="email-address"
-          />
-        </View>
+            <View style={styles.inputGroup}>
+              <Text style={styles.label}>Email</Text>
+              <TextInput
+                style={styles.input}
+                value={values.email}
+                onChangeText={handleChange("email")}
+                onBlur={handleBlur("email")}
+                placeholder="Ingrese email"
+                keyboardType="email-address"
+                autoCapitalize="none"
+              />
+              {touched.email && errors.email && (
+                <Text style={styles.errorText}>{errors.email}</Text>
+              )}
+            </View>
 
-        <View style={styles.inputGroup}>
-          <Text style={styles.label}>Contraseña</Text>
-          <TextInput
-            style={styles.input}
-            value={formData.password}
-            onChangeText={(text) =>
-              setFormData({ ...formData, password: text })
-            }
-            placeholder="Ingrese contraseña"
-            secureTextEntry
-          />
-        </View>
+            <View style={styles.inputGroup}>
+              <Text style={styles.label}>Contraseña</Text>
+              <TextInput
+                style={styles.input}
+                value={values.password}
+                onChangeText={handleChange("password")}
+                onBlur={handleBlur("password")}
+                placeholder="Ingrese contraseña"
+                secureTextEntry
+              />
+              {touched.password && errors.password && (
+                <Text style={styles.errorText}>{errors.password}</Text>
+              )}
+            </View>
 
-        <View style={styles.buttonContainer}>
-          <TouchableOpacity
-            style={[styles.button, styles.cancelButton]}
-            onPress={() => router.back()}
-          >
-            <Text style={styles.buttonText}>Cancelar</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={[styles.button, styles.submitButton]}
-            onPress={handleSubmit}
-          >
-            <Text style={styles.buttonText}>Guardar</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
+            <View style={styles.buttonContainer}>
+              <TouchableOpacity
+                style={[styles.button, styles.cancelButton]}
+                onPress={() => router.back()}
+              >
+                <Text style={styles.buttonText}>Cancelar</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[styles.button, styles.submitButton]}
+                onPress={() => handleSubmit()}
+              >
+                <Text style={styles.buttonText}>Guardar</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        )}
+      </Formik>
     </ScrollView>
   );
 };
@@ -138,6 +181,11 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#e1e8ed",
     fontSize: 16,
+  },
+  errorText: {
+    color: "red",
+    fontSize: 14,
+    marginTop: 5,
   },
   buttonContainer: {
     flexDirection: "row",
